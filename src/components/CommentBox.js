@@ -1,9 +1,25 @@
 import React, { Component } from 'react'
+import {useNavigate} from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from 'actions';
 
 class CommentBox extends Component {
     state = {comment:""}
+
+    componentDidMount(){
+        this.shouldNavigateAway();
+    }
+
+    componentDidUpdate(){
+        this.shouldNavigateAway();
+    }
+
+    shouldNavigateAway(){
+        if(!this.props.auth){
+            setTimeout(() =>this.props.navigate('/', { replace: true }), 1);
+        }
+    }
+
     handleChange = event => {
         this.setState({comment: event.target.value });
     }
@@ -33,4 +49,13 @@ class CommentBox extends Component {
     }
 }
 
-export default connect(null, actions)(CommentBox)
+function WithNavigate(props) {
+    let navigate = useNavigate();
+    return <CommentBox {...props} navigate={navigate} />
+}
+
+function mapStateToProps(state){
+    return{auth: state.auth};
+}
+
+export default connect(mapStateToProps, actions)(WithNavigate)
